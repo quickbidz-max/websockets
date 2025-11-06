@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef, FormEvent } from 'react';
-import { Socket } from 'socket.io-client';
+import { useState, useEffect, useRef, FormEvent } from "react";
+import { Socket } from "socket.io-client";
 
 interface Message {
   username: string;
@@ -21,7 +21,7 @@ export default function ChatScreen({
   onLeave,
 }: ChatScreenProps) {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [onlineCount, setOnlineCount] = useState(0);
   const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
   const [isTyping, setIsTyping] = useState(false);
@@ -29,14 +29,14 @@ export default function ChatScreen({
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    socket.emit('join', { username });
+    socket.emit("join", { username });
 
-    socket.on('joined', (data: { username: string; onlineCount: number }) => {
+    socket.on("joined", (data: { username: string; onlineCount: number }) => {
       setOnlineCount(data.onlineCount);
       setMessages((prev) => [
         ...prev,
         {
-          username: 'System',
+          username: "System",
           message: `You joined the chat`,
           timestamp: new Date().toISOString(),
         },
@@ -44,37 +44,37 @@ export default function ChatScreen({
     });
 
     socket.on(
-      'userJoined',
+      "userJoined",
       (data: { username: string; onlineCount: number }) => {
         setOnlineCount(data.onlineCount);
         setMessages((prev) => [
           ...prev,
           {
-            username: 'System',
+            username: "System",
             message: `${data.username} joined the chat`,
             timestamp: new Date().toISOString(),
           },
         ]);
-      },
+      }
     );
 
-    socket.on('userLeft', (data: { username: string; onlineCount: number }) => {
+    socket.on("userLeft", (data: { username: string; onlineCount: number }) => {
       setOnlineCount(data.onlineCount);
       setMessages((prev) => [
         ...prev,
         {
-          username: 'System',
+          username: "System",
           message: `${data.username} left the chat`,
           timestamp: new Date().toISOString(),
         },
       ]);
     });
 
-    socket.on('message', (data: Message) => {
+    socket.on("message", (data: Message) => {
       setMessages((prev) => [...prev, data]);
     });
 
-    socket.on('typing', (data: { username: string; isTyping: boolean }) => {
+    socket.on("typing", (data: { username: string; isTyping: boolean }) => {
       setTypingUsers((prev) => {
         const newSet = new Set(prev);
         if (data.isTyping) {
@@ -87,23 +87,23 @@ export default function ChatScreen({
     });
 
     return () => {
-      socket.off('joined');
-      socket.off('userJoined');
-      socket.off('userLeft');
-      socket.off('message');
-      socket.off('typing');
+      socket.off("joined");
+      socket.off("userJoined");
+      socket.off("userLeft");
+      socket.off("message");
+      socket.off("typing");
     };
   }, [socket, username]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const handleSendMessage = (e: FormEvent) => {
     e.preventDefault();
     if (message.trim() && socket) {
-      socket.emit('message', { message: message.trim() });
-      setMessage('');
+      socket.emit("message", { message: message.trim() });
+      setMessage("");
       handleStopTyping();
     }
   };
@@ -111,7 +111,7 @@ export default function ChatScreen({
   const handleTyping = () => {
     if (!isTyping) {
       setIsTyping(true);
-      socket.emit('typing', { isTyping: true });
+      socket.emit("typing", { isTyping: true });
     }
 
     if (typingTimeoutRef.current) {
@@ -126,7 +126,7 @@ export default function ChatScreen({
   const handleStopTyping = () => {
     if (isTyping) {
       setIsTyping(false);
-      socket.emit('typing', { isTyping: false });
+      socket.emit("typing", { isTyping: false });
     }
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
@@ -135,8 +135,8 @@ export default function ChatScreen({
 
   const formatTime = (timestamp: string) => {
     return new Date(timestamp).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -147,11 +147,13 @@ export default function ChatScreen({
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Chat Room</h1>
             <p className="text-sm text-gray-600">
-              {onlineCount} {onlineCount === 1 ? 'user' : 'users'} online
+              {onlineCount} {onlineCount === 1 ? "user" : "users"} online
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">Logged in as: {username}</span>
+            <span className="text-sm text-gray-600">
+              Logged in as: {username}
+            </span>
             <button
               onClick={onLeave}
               className="rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-600"
@@ -169,22 +171,22 @@ export default function ChatScreen({
               key={index}
               className={`flex ${
                 msg.username === username
-                  ? 'justify-end'
-                  : msg.username === 'System'
-                    ? 'justify-center'
-                    : 'justify-start'
+                  ? "justify-end"
+                  : msg.username === "System"
+                  ? "justify-center"
+                  : "justify-start"
               }`}
             >
               <div
                 className={`max-w-xs lg:max-w-md rounded-lg px-4 py-2 ${
                   msg.username === username
-                    ? 'bg-indigo-600 text-white'
-                    : msg.username === 'System'
-                      ? 'bg-gray-200 text-gray-700 text-sm'
-                      : 'bg-white text-gray-800 border border-gray-200'
+                    ? "bg-indigo-600 text-white"
+                    : msg.username === "System"
+                    ? "bg-gray-200 text-gray-700 text-sm"
+                    : "bg-white text-gray-800 border border-gray-200"
                 }`}
               >
-                {msg.username !== 'System' && msg.username !== username && (
+                {msg.username !== "System" && msg.username !== username && (
                   <div className="text-xs font-semibold mb-1 text-gray-600">
                     {msg.username}
                   </div>
@@ -193,8 +195,8 @@ export default function ChatScreen({
                 <div
                   className={`text-xs mt-1 ${
                     msg.username === username
-                      ? 'text-indigo-200'
-                      : 'text-gray-500'
+                      ? "text-indigo-200"
+                      : "text-gray-500"
                   }`}
                 >
                   {formatTime(msg.timestamp)}
@@ -208,11 +210,15 @@ export default function ChatScreen({
 
       {typingUsers.size > 0 && (
         <div className="px-6 py-2 text-sm text-gray-500 italic">
-          {Array.from(typingUsers).join(', ')} {typingUsers.size === 1 ? 'is' : 'are'} typing...
+          {Array.from(typingUsers).join(", ")}{" "}
+          {typingUsers.size === 1 ? "is" : "are"} typing...
         </div>
       )}
 
-      <form onSubmit={handleSendMessage} className="bg-white border-t border-gray-200 px-6 py-4">
+      <form
+        onSubmit={handleSendMessage}
+        className="bg-white border-t border-gray-200 px-6 py-4"
+      >
         <div className="flex gap-4">
           <input
             type="text"
@@ -223,7 +229,7 @@ export default function ChatScreen({
             }}
             onBlur={handleStopTyping}
             placeholder="Type a message..."
-            className="flex-1 rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+            className="flex-1 rounded-lg border border-gray-300 px-4 py-3 ml-10 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
           />
           <button
             type="submit"
@@ -237,4 +243,3 @@ export default function ChatScreen({
     </div>
   );
 }
-
